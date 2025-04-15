@@ -1,6 +1,111 @@
-<html>
-  <title>lalala</title>
-  <body>strona index
-  </body>
-  dadad
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oliwier Czerwone Kółka na Canvas</title>
+    <style>
+        #restartButton {
+            
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <button id="restartButton">Zagraj ponownie</button>
+    <script>
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+        let pos = { x: 250, y: 250 };
+        let directionX = 1;
+        let directionY = 2;
+        const radius = 20;
+        let platformX = 150;
+        const platformWidth = 120;
+        const platformHeight = 10;
+        let gameOver = false;
+
+        function rysujKolka(x, y, radius) {
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = "red";
+            ctx.fill();
+        }
+
+        function rysujKrawedz() {
+            ctx.beginPath();
+            ctx.rect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "black";
+            ctx.lineWidth = 5;
+            ctx.stroke();
+        }
+
+        function rysujPlatforme() {
+            ctx.beginPath();
+            ctx.rect(platformX, canvas.height - 30, platformWidth, platformHeight);
+            ctx.fillStyle = "blue";
+            ctx.fill();
+        }
+
+        function rysujGameOver() {
+            ctx.font = "30px Arial";
+            ctx.fillStyle = "black";
+            ctx.fillText("Game Over", canvas.width / 2 - 90, canvas.height / 2);
+        }
+
+        function moveCircle() {
+            if (gameOver) {
+                rysujGameOver();
+                document.getElementById('restartButton').style.display = 'block';
+                return;
+            }
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            rysujKrawedz();
+            rysujPlatforme();
+
+            pos.x += directionX;
+            pos.y += directionY;
+
+            if (pos.x + radius >= canvas.width || pos.x - radius <= 0) {
+                directionX = -directionX;
+            }
+
+            if (pos.y - radius <= 0) {
+                directionY = -directionY;
+            }
+
+            if (pos.y + radius >= canvas.height - 30 && pos.x >= platformX && pos.x <= platformX + platformWidth) {
+                directionY = -directionY;
+            }
+
+            if (pos.y + radius >= canvas.height) {
+                gameOver = true;
+            }
+
+            rysujKolka(pos.x, pos.y, radius);
+        }
+
+        document.addEventListener("keydown", function(event) {
+            if (!gameOver) {
+                if (event.key === "a" && platformX > 0) {
+                    platformX -= 20;
+                } else if (event.key === "d" && platformX + platformWidth < canvas.width) {
+                    platformX += 20;
+                }
+            }
+        });
+
+        document.getElementById('restartButton').addEventListener('click', function() {
+            location.reload();
+        });
+
+        setInterval(moveCircle, 8);
+    </script>
+</body>
 </html>
